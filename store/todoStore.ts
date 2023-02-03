@@ -1,26 +1,27 @@
-import { create } from 'zustand';
-import { ITodo, IUseTodo } from './../modules/Todo';
-import { persist, devtools } from 'zustand/middleware';
+import { create } from "zustand"
+import { IUseTodo } from "./../modules/Todo"
+import { persist, devtools } from "zustand/middleware"
 
 const useTodo = create<IUseTodo>()(
 	devtools(
 		persist(
 			(set, get) => ({
 				todos: [],
-				changeTodo: (id: number) => {
-					get().todos.map(t => {
+				changeTodo: (id: number, e) => {
+					e?.stopPropagation()
+					get().todos.map((t) => {
 						if (t.id === id) {
-							return [...get().todos, (t.checked = !t.checked)];
+							return [...get().todos, (t.checked = !t.checked)]
 						}
-						return t;
-					});
+						return t
+					})
 					return set({
 						todos: [...get().todos],
-					});
+					})
 				},
 				removeTodo: (id: number) =>
 					set({
-						todos: [...get().todos.filter(t => t.id !== id)],
+						todos: [...get().todos.filter((t) => t.id !== id)],
 					}),
 				addTodo: (title: string) =>
 					set({
@@ -34,11 +35,23 @@ const useTodo = create<IUseTodo>()(
 						],
 					}),
 				clearTodos: () => set({ todos: [] }),
+				editTodo: (id: number, title: string) => {
+					get().todos.map((t) => {
+						if (t.id === id) {
+							return [...get().todos, (t.title = title.trimStart().trimEnd())]
+						}
+						return t
+					})
+					return set({
+						todos: [...get().todos],
+					})
+				},
 			}),
+
 			{
-				name: 'todos',
+				name: "todos",
 			}
 		)
 	)
-);
-export default useTodo;
+)
+export default useTodo

@@ -1,33 +1,22 @@
-import { List, ListItem, ListItemText, Button, Checkbox } from '@mui/material';
-import Box from '@mui/material/Box';
-import useTodo from '../../../store/todoStore';
-import ClearIcon from '@mui/icons-material/Clear';
-import { useContext } from 'react';
-import { TodoContext } from './../Todo/index';
-import { ITodoContext } from '../../../modules/Todo';
+import { List } from "@mui/material"
+import Box from "@mui/material/Box"
+import { memo, useContext, useMemo } from "react"
+import { TodoContext } from "./../Todo/index"
+import { ITodoContext } from "../../../modules/Todo"
+import TodoItem from "../TodoItem"
 function TodoList() {
-	const { todos } = useContext(TodoContext) as ITodoContext;
-	const changeTodo = useTodo(state => state.changeTodo);
-	const removeTodo = useTodo(state => state.removeTodo);
-
+	const { todos } = useContext(TodoContext) as ITodoContext
+	const memoTodos = useMemo(() => {
+		return todos
+	}, [todos])
 	return (
 		<Box mt={1}>
-			<List className="todo-list">
-				{Boolean(todos.length) &&
-					todos.map(t => (
-						<ListItem key={t.id}>
-							<ListItemText className={t.checked ? 'todo-item-checked' : ''}>
-								{t.title}
-							</ListItemText>
-							<Checkbox checked={t.checked} onChange={() => changeTodo(t.id)} />
-							<Button className="add-todo" onClick={() => removeTodo(t.id)}>
-								<ClearIcon fontSize={'medium'} />
-							</Button>
-						</ListItem>
-					))}
+			<List className='todo-list'>
+				{Boolean(memoTodos.length) &&
+					memoTodos.map((t) => <TodoItem key={t.id} {...t} />)}
 			</List>
 		</Box>
-	);
+	)
 }
 
-export default TodoList;
+export default memo(TodoList)
